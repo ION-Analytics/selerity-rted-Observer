@@ -100,9 +100,6 @@ public class ObsSpecLookup extends PeriodicTask implements Lookup<Long, Observat
         final String timestamp = (String) response.getResult();
         getLogger().info("Server time: " + timestamp);
 
-        // Experimental break
-        if (this == this) throw new MalformedURLException("Test");
-
         // Ask the server for the entitlements
         request = new Request(periodicSession, "ContentSetHandler.getContentSets");
         response = periodicSession.dispatch(request);
