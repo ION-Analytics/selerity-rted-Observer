@@ -1,0 +1,123 @@
+<?xml version="1.0" ?>
+<!--
+(c) Copyright Selerity, Inc. 2009-2012. All rights reserved. This source code is confidential
+and proprietary information of Selerity Inc. and may be used only by a recipient designated
+by and for the purposes permitted by Selerity Inc. in writing.  Reproduction of, dissemination
+of, modifications to or creation of derivative works from this source code, whether in source
+or binary forms, by any means and in any form or manner, is expressly prohibited, except with
+the prior written permission of Selerity Inc..  THIS CODE AND INFORMATION ARE PROVIDED "AS IS"
+WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED
+WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE. This notice may not be
+removed from the software by any user thereof.
+-->
+<project name="observer" default="dist-jar" basedir=".">
+    <!-- Properties -->
+    <property name="dir.build" location="build"/>
+    <property name="dir.main.classes" location="${dir.build}/classes"/>
+    <property name="dir.test.classes" location="${dir.build}/tests"/>
+    <property name="dir.test.reports" location="${dir.build}/test-reports"/>
+    <property name="dir.dist" location="dist"/>
+    <property name="dir.src" location="src"/>
+    <property name="dir.main.src" location="${dir.src}/main/java"/>
+    <property name="dir.test.src" location="${dir.src}/test/java"/>
+    <property name="dir.main.resources" location="${dir.src}/main/resources"/>
+    <property name="dir.test.resources" location="${dir.src}/test/resources"/>
+    <property name="dir.lib" location="lib"/>
+    <property name="dir.doc" location="doc"/>
+    <property name="test.name" value="*" />
+
+    <!-- Path Setup -->
+    <path id="classpath.main">
+        <pathelement location="${dir.main.classes}"/>
+        <fileset dir="${dir.lib}/runtime" includes="**/*.jar"/>
+    </path>
+    <path id="classpath.test">
+        <path refid="classpath.main"/>
+        <pathelement location="${dir.test.classes}"/>
+        <fileset dir="${dir.lib}/test" includes="**/*.jar"/>
+    </path>
+
+    <!-- Targets -->
+    <target name="init">
+        <echo>Initializing project...</echo>
+        <mkdir dir="${dir.build}"/>
+        <mkdir dir="${dir.dist}"/>
+    </target>
+
+    <target name="compile" depends="init" description="compile the source ">
+        <mkdir dir="${dir.main.classes}"/>
+        <javac srcdir="${dir.main.src}" destdir="${dir.main.classes}" includeantruntime="false" debug="on">
+            <classpath refid="classpath.main"/>
+        </javac>
+        <copy todir="${dir.main.classes}">
+            <fileset dir="${dir.main.resources}" includes="**/*"/>
+        </copy>
+    </target>
+
+    <target name="compile-test" depends="init,compile">
+        <mkdir dir="${dir.test.classes}"/>
+        <javac srcdir="${dir.test.src}" destdir="${dir.test.classes}" includeantruntime="false" debug="on">
+            <classpath refid="classpath.test"/>
+        </javac>
+        <copy todir="${dir.test.classes}">
+            <fileset dir="${dir.test.resources}" includes="**/*"/>
+        </copy>
+    </target>
+
+    <target name="test" depends="compile-test" description="Run basic tests">
+        <mkdir dir="${dir.test.reports}"/>
+        <junit printsummary="yes" fork="yes" haltonfailure="yes" showoutput="yes" >
+            <jvmarg value="-Dconfig.properties=test.properties"/>
+            <classpath refid="classpath.test"/>
+            <formatter type="xml"/>
+            <batchtest todir="${dir.test.reports}" >
+                <fileset dir="${dir.test.classes}" includes="**/${test.name}Test.class" excludes="**/*IntegrationTest.class"/>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="test-integration" depends="compile-test" description="Run integration tests">
+        <mkdir dir="${dir.test.reports}"/>
+        <junit fork="yes" haltonfailure="yes" showoutput="yes">
+            <jvmarg value="-Dconfig.properties=test.properties"/>
+            <classpath refid="classpath.test"/>
+            <formatter type="xml" />
+            <batchtest todir="${dir.test.reports}">
+                <fileset dir="${dir.test.classes}" includes="**/${test.name}IntegrationTest.class"/>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="dist-jar" depends="compile" description="Generate the binary distribution">
+        <mkdir dir="${dir.dist}"/>
+        <jar jarfile="${dir.dist}/${ant.project.name}.jar" basedir="${dir.main.classes}">
+            <zipgroupfileset dir="${dir.lib}/runtime" includes="**/*.jar"/>
+            <manifest>
+                <attribute name="Main-Class" value="com.seleritycorp.${ant.project.name}.App"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="dist-src" description="Generate the source distribution">
+        <mkdir dir="${dir.dist}"/>
+        <zip destfile="${dir.dist}/${ant.project.name}.zip">
+            <zipfileset dir="lib" prefix="${ant.project.name}/lib"/>
+            <zipfileset dir="src" prefix="${ant.project.name}/src"/>
+            <zipfileset dir="." includes="build.xml" prefix="${ant.project.name}"/>
+            <zipfileset dir="." includes="README.txt" prefix="${ant.project.name}"/>
+        </zip>
+    </target>
+
+    <target name="run" depends="dist-jar" description="Run the project">
+        <java jar="${dir.dist}/${ant.project.name}.jar" fork="true" >
+            <jvmarg value="-Djava.util.logging.config.class=com.seleritycorp.cs.standalone.commons.LoggingConfig"/>
+        </java>
+    </target>
+
+    <target name="clean" description="Deletes all generated files and directories">
+        <echo>Cleaning Project...</echo>
+        <delete dir="${dir.build}"/>
+        <delete dir="${dir.dist}"/>
+    </target>
+
+</project>
