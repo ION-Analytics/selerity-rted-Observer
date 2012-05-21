@@ -13,9 +13,9 @@
 package com.seleritycorp.observer.reference;
 
 import com.seleritycorp.cs.standalone.commons.DateUtils;
-import com.seleritycorp.cs.standalone.commons.Lookup;
-import com.seleritycorp.cs.standalone.commons.LruCache;
 import com.seleritycorp.cs.standalone.commons.PeriodicTask;
+import com.seleritycorp.cs.standalone.commons.caching.Lookup;
+import com.seleritycorp.cs.standalone.commons.caching.SimpleCache;
 import com.seleritycorp.datatypes.ObservationSpec;
 import com.seleritycorp.datatypes.SearchOption;
 import com.seleritycorp.narwhal.client.*;
@@ -25,7 +25,10 @@ import com.seleritycorp.observer.Config;
 
 import java.net.MalformedURLException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class ObsSpecLookup extends PeriodicTask implements Lookup<Long, ObservationSpec> {
     private static final int RELOAD_MINUTES = 30;
     private final CSAuthSession session;
-    private final Map<Long, ObservationSpec> specCache;
+    private final SimpleCache<Long, ObservationSpec> specCache;
     private final ObservableLookup observableLookup;
 
     public ObsSpecLookup(ObservableLookup observableLookup) throws MalformedURLException {
@@ -43,41 +46,15 @@ public class ObsSpecLookup extends PeriodicTask implements Lookup<Long, Observat
                 Config.CLIENT.getProperty(), Config.SERVER_CS.getProperty());
         session.setPassword(Config.PASSWORD.getProperty());
         session.setDebug(Boolean.parseBoolean(Config.RPC_DEBUG.getProperty()));
-        specCache = Collections.synchronizedMap(new LruCache<Long, ObservationSpec>(Integer.parseInt(Config.SPEC_CACHE_SIZE.getProperty())));
+        specCache = new SimpleCache<>(null,new OnCacheMiss(),2);
+        specCache.setMaximumSize(Integer.parseInt(Config.SPEC_CACHE_SIZE.getProperty()));
         this.observableLookup = observableLookup;
     }
 
-    @SuppressWarnings("unchecked")
+
     @Override
     public ObservationSpec get(Long specId) {
-        final ObservationSpec cached = specCache.get(specId);
-        if (cached != null) {
-            return cached;
-        }
-        getLogger().info("Cache miss " + specId);
-        final Request request = new Request(session, BDS.GET_OBS_SPEC, specId);
-        final Response response;
-        try {
-            response = session.dispatch(request);
-        } catch (DispatchException e) {
-            getLogger().warning("Failed to dispatch " + request + ": " + e);
-            return null;
-        }
-
-        if (response.hasError()) {
-            getLogger().warning("Could not find obs spec " + specId + ": " + response.getError());
-            return null;
-        }
-
-        if (!(response.getResult() instanceof Map)) {
-            getLogger().warning("Spec lookup returned bad type.");
-            return null;
-        }
-
-        Map<String, Object> obsSpec = (Map<String, Object>) response.getResult();
-        final ObservationSpec observationSpec = new ObservationSpec(obsSpec);
-        specCache.put(observationSpec.getLegacyId(), observationSpec);
-        return observationSpec;
+        return specCache.get(specId);
     }
 
     /**
@@ -152,6 +129,35 @@ public class ObsSpecLookup extends PeriodicTask implements Lookup<Long, Observat
         }
 
         getLogger().info("Specs cached: " + specCache.size());
+    }
+
+    private class OnCacheMiss implements Lookup<Long, ObservationSpec> {
+        @SuppressWarnings("unchecked")
+        @Override
+        public ObservationSpec get(Long specId) {
+            getLogger().info("Cache miss " + specId);
+            final Request request = new Request(session, BDS.GET_OBS_SPEC, specId);
+            final Response response;
+            try {
+                response = session.dispatch(request);
+            } catch (DispatchException e) {
+                getLogger().warning("Failed to dispatch " + request + ": " + e);
+                return null;
+            }
+
+            if (response.hasError()) {
+                getLogger().warning("Could not find obs spec " + specId + ": " + response.getError());
+                return null;
+            }
+
+            if (!(response.getResult() instanceof Map)) {
+                getLogger().warning("Spec lookup returned bad type.");
+                return null;
+            }
+
+            Map<String, Object> obsSpec = (Map<String, Object>) response.getResult();
+            return new ObservationSpec(obsSpec);
+        }
     }
 
 }

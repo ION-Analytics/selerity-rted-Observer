@@ -12,8 +12,8 @@
 
 package com.seleritycorp.observer.reference;
 
-import com.seleritycorp.cs.standalone.commons.Lookup;
 import com.seleritycorp.cs.standalone.commons.PeriodicTask;
+import com.seleritycorp.cs.standalone.commons.caching.Lookup;
 import com.seleritycorp.narwhal.client.RemoteException;
 import com.seleritycorp.narwhal.client.Request;
 import com.seleritycorp.narwhal.client.Response;
