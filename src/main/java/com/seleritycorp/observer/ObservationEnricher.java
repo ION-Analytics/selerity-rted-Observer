@@ -86,8 +86,8 @@ public class ObservationEnricher extends DoesLoggingImpl implements Runnable {
 
             final Long obsSpecId = ((Number) packet.get("swordfishObsSpecID")).longValue();
 
-            // Discard Flow Test
-            if (obsSpecId == 4) {
+            // Discard noise
+            if (obsSpecId == ObsSpecIds.FLOW_TEST || obsSpecId == ObsSpecIds.HEADLINE1 || obsSpecId == ObsSpecIds.HEADLINE2) {
                 return;
             }
             history.add("Ready for spec");

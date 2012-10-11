@@ -16,9 +16,7 @@ import com.seleritycorp.cs.standalone.commons.DataListener;
 import com.seleritycorp.cs.standalone.commons.DateUtils;
 import com.seleritycorp.cs.standalone.commons.StartStop;
 import com.seleritycorp.cs.standalone.commons.logging.DoesLoggingImpl;
-import com.seleritycorp.narwhal.client.AuthenticatedSession;
-import com.seleritycorp.narwhal.client.Request;
-import com.seleritycorp.narwhal.client.Response;
+import com.seleritycorp.narwhal.client.*;
 import com.seleritycorp.narwhal.client.methods.OBS;
 
 import java.util.AbstractMap;
@@ -40,11 +38,15 @@ public class ResponseListener extends DoesLoggingImpl implements StartStop, Data
     @Override
     public void start() throws Exception {
         alive.set(0);
-        final AuthenticatedSession session = new AuthenticatedSession(Config.SERVER_OBS.getProperty(), Config.USER.getProperty(), Config.CLIENT.getProperty());
+        final AuthenticatedSession session = new AuthenticatedSession(Config.SERVER_CS.getProperty(), Config.USER.getProperty(), Config.CLIENT.getProperty());
         session.setDebug(Boolean.parseBoolean(Config.RPC_DEBUG.getProperty()));
         session.setPassword(Config.PASSWORD.getProperty());
-        final Request request = new Request(session, OBS.SUBSCRIBE, DateUtils.format(new Date()), "SPEC_MEASUREMENT_STATUS");
-        observations = session.dispatch(request, this);
+        session.connect();
+        final Session authenticatedSession = new Session(Config.SERVER_OBS.getProperty(), Config.USER.getProperty(), Config.CLIENT.getProperty());
+        authenticatedSession.setToken(session.getToken());
+        authenticatedSession.setDebug(Boolean.parseBoolean(Config.RPC_DEBUG.getProperty()));
+        final Request request = new Request(authenticatedSession, OBS.SUBSCRIBE, DateUtils.format(new Date()), "SPEC_MEASUREMENT_STATUS");
+        observations = authenticatedSession.dispatch(request, this);
         observations.start();
         while (!observations.isAlive()) {
             TimeUnit.MILLISECONDS.sleep(20);
