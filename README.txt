@@ -64,7 +64,7 @@ Logging is configured using the standard java logging properties file
 which can be retrieved from a file or a jar resource (See example in
 resources) as follows:
 
-   java -Djava.util.logging.config.class=com.seleritycorp.cs.standalone.commons.LoggingConfig -Djava.util.logging.config.file=logging.properties -jar dist/observer.jar
+   java -Djava.util.logging.config.class=com.seleritycorp.cs.standalone.commons.logging.LoggingConfig -Djava.util.logging.config.file=logging.properties -jar dist/observer.jar
 
 
 Observation Processors
