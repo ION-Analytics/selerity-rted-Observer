@@ -77,6 +77,7 @@ public class ResponseListener extends DoesLoggingImpl implements StartStop, Data
             return;
         }
         try {
+            getLogger().info("Response received: "+response.getResult());
             final DateHistory timeHistory = new DateHistory("Message Processing", "Response received");
             queue.put(new AbstractMap.SimpleEntry<>(timeHistory, response.getResult()));
         } catch (InterruptedException e) {
