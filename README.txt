@@ -10,7 +10,7 @@ Required Software
 
 To build the program the following are required:
 
-   Java 1.7 SE  (http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+   compatible with Java 1.7 and Java 1.8 SE  (http://www.oracle.com/technetwork/java/javase/downloads/index.html)
    Ant 1.8.2 (http://ant.apache.org/bindownload.cgi)
    Ant-JUnit 1.8.2 (bundled with Ant package on Apache website; separate installation may be required if installing using OS package manager)
 
