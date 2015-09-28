@@ -97,3 +97,6 @@ Change Log
 
 20120420:
 - Fixed edge case in reconnect logic.
+
+20150925:
+- Update sample config to use rted-api endpoints
