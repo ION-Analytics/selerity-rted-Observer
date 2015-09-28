@@ -49,6 +49,28 @@ This program has been run successfully on, but is not necessarily limited to, Ma
 OS X, Linux, and Windows Server 2008.
 
 
+Setting up client certificate
+=============================
+
+In order to be able connect to Selerity's public endpoints, you have
+to configure Java to send along your client certificate (If you
+haven't received a client certificate, please let us know. See
+"Support" below).
+
+To configure Java to send along your client certificate, please set up
+a KeyStore and import your client certificate there. You can find the
+details in your Java documentation.
+
+For development purposes, you can dodge KeyStore-setup and instead
+simply add
+
+  -Djavax.net.ssl.keyStoreType=pkcs12
+  -Djavax.net.ssl.keyStore=/path/to/your/certificate.p12
+  -Djavax.net.ssl.keyStorePassword="YourCertificatePassword"
+
+as first arguments to every call of the Java executable.
+
+
 Configuring
 ===========
 
@@ -100,3 +122,6 @@ Change Log
 
 20150925:
 - Update sample config to use rted-api endpoints
+
+20150928:
+- Document requirement of client certificate
