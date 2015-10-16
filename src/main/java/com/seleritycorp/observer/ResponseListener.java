@@ -43,6 +43,7 @@ public class ResponseListener extends DoesLoggingImpl implements StartStop, Data
         session.setPassword(Config.PASSWORD.getProperty());
         session.connect();
         final Session authenticatedSession = new Session(Config.SERVER_OBS.getProperty(), Config.USER.getProperty(), Config.CLIENT.getProperty());
+        authenticatedSession.setReadTimeout(TimeUnit.SECONDS, 90)
         authenticatedSession.setToken(session.getToken());
         authenticatedSession.setDebug(Boolean.parseBoolean(Config.RPC_DEBUG.getProperty()));
         final Request request = new Request(authenticatedSession, OBS.SUBSCRIBE, DateUtils.format(new Date()), "SPEC_MEASUREMENT_STATUS");
@@ -87,7 +88,7 @@ public class ResponseListener extends DoesLoggingImpl implements StartStop, Data
 
     @Override
     public void endOfData() {
-        getLogger().info("Recieved endOfData");
+        getLogger().info("Received endOfData");
         observations = null;
 
         while (observations == null || !observations.isAlive()) {
