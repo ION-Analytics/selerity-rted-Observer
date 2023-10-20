@@ -16,6 +16,7 @@ import com.seleritycorp.cs.standalone.commons.IOUtilities;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -36,22 +37,30 @@ public enum Config {
     SPEC_PREFETCH_WINDOW("120"),
     SPEC_CACHE_SIZE("5000");
 
-    private static final Properties PROPERTIES;
+    private static final Logger LOGGER = Logger.getLogger(Config.class.getName());
+
+    private static final Properties PROPERTIES = new Properties();
     private final String defaultValue;
 
     static {
         final String properties = System.getProperty("config.properties", "config.properties");
-        PROPERTIES = new Properties();
         try {
+            LOGGER.info("Read 'config.properties': " + properties);
             InputStream stream = IOUtilities.getResourceAsStream(properties);
             if (stream == null) {
-                Logger.getLogger(Config.class.getName()).warning("Failed finding " + properties);
+                LOGGER.warning("Failed finding " + properties);
             } else {
-                PROPERTIES.load(IOUtilities.getResourceAsStream(properties));
+                PROPERTIES.load(stream);
             }
         } catch (IOException e) {
-            Logger.getLogger(Config.class.getName()).warning("Failed loading " + properties + ": " + e);
+            LOGGER.warning("Failed loading " + properties + ": " + e);
         }
+
+        StringBuilder sb = new StringBuilder();
+        for (Iterator<Object> it = PROPERTIES.keySet().iterator(); it.hasNext();) {
+            sb.append(' ').append(it.next()).append(';');
+        }
+        LOGGER.info("PROPERTIES has " + PROPERTIES.size() + " keys:" + sb.toString());
     }
 
     private Config() {
@@ -64,6 +73,10 @@ public enum Config {
 
     public String getDefaultValue() {
         return defaultValue;
+    }
+
+    public boolean hasProperty() {
+        return PROPERTIES.containsKey(name());
     }
 
     public String getProperty() {

@@ -31,6 +31,9 @@ public class App {
 
         // Find the processor class
         final String processorClass = Config.PROCESSOR_CLASS.getProperty();
+        if (!Config.PROCESSOR_CLASS.hasProperty()) {
+            LOGGER.warning("will use default value for " + Config.PROCESSOR_CLASS.name() + ": " + processorClass);
+        }
 
         try {
             observationProcessor = (Processor) Class.forName(processorClass).newInstance();
