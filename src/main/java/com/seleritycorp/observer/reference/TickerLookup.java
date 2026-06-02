@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Selerity, Inc. 2009-2012. All rights reserved. This source code is confidential
+ * (c) Copyright Selerity, Inc. 2009-2019. All rights reserved. This source code is confidential
  * and proprietary information of Selerity Inc. and may be used only by a recipient designated
  * by and for the purposes permitted by Selerity Inc. in writing.  Reproduction of, dissemination
  * of, modifications to or creation of derivative works from this source code, whether in source
@@ -9,7 +9,6 @@
  * WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE. This notice may not be
  * removed from the software by any user thereof.
  */
-
 package com.seleritycorp.observer.reference;
 
 import com.seleritycorp.cs.standalone.commons.PeriodicTask;
@@ -57,14 +56,11 @@ public class TickerLookup extends PeriodicTask implements Lookup<String, String>
         session.setDebug(Boolean.parseBoolean(Config.RPC_DEBUG.getProperty()));
         final Request request = new Request(session, BDS.GET_ALL_TAGS);
         final Response response = session.dispatch(request);
-
         if (response.hasError()) {
             throw new RemoteException(response.getError());
         }
 
         final List<Map<String, Object>> tags = (List<Map<String, Object>>) response.getResult();
-
-
         if (tags == null) {
             return;
         }
@@ -92,6 +88,7 @@ public class TickerLookup extends PeriodicTask implements Lookup<String, String>
      * Compare two synonyms by the relative ranks of their families.
      */
     private class SynonymComparator implements Comparator<Map<String, Object>> {
+
         @Override
         public int compare(Map<String, Object> map1, Map<String, Object> map2) {
             final int rank1 = rank((String) map1.get("family"));
@@ -113,4 +110,5 @@ public class TickerLookup extends PeriodicTask implements Lookup<String, String>
             return 0;
         }
     }
+
 }

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Selerity, Inc. 2009-2012. All rights reserved. This source code is confidential
+ * (c) Copyright Selerity, Inc. 2009-2019. All rights reserved. This source code is confidential
  * and proprietary information of Selerity Inc. and may be used only by a recipient designated
  * by and for the purposes permitted by Selerity Inc. in writing.  Reproduction of, dissemination
  * of, modifications to or creation of derivative works from this source code, whether in source
@@ -9,7 +9,6 @@
  * WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE. This notice may not be
  * removed from the software by any user thereof.
  */
-
 package com.seleritycorp.observer;
 
 import com.seleritycorp.cs.standalone.commons.logging.DoesLoggingImpl;
@@ -28,9 +27,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 
 /**
- * This class takes object from a blocking queue assumed to be json objects representing
- * observations. It maps the data, with enrichment, to a proper class and then passes it
- * along to a consumer.
+ * This class takes object from a blocking queue assumed to be json objects representing observations.
+ * It maps the data, with enrichment, to a proper class and then passes it along to a consumer.
  */
 public class ObservationEnricher extends DoesLoggingImpl implements Runnable {
     private final BlockingQueue<Map.Entry<DateHistory, Object>> queue;
@@ -123,6 +121,5 @@ public class ObservationEnricher extends DoesLoggingImpl implements Runnable {
             getLogger().log(Level.FINE, "Failed to enrich " + entry.getValue(), e);
         }
     }
-
 
 }
