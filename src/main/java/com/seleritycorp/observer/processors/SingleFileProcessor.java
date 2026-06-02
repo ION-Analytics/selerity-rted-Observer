@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Selerity, Inc. 2009-2012. All rights reserved. This source code is confidential 
+ * (c) Copyright Selerity, Inc. 2009-2019. All rights reserved. This source code is confidential 
  * and proprietary information of Selerity Inc. and may be used only by a recipient designated 
  * by and for the purposes permitted by Selerity Inc. in writing.  Reproduction of, dissemination 
  * of, modifications to or creation of derivative works from this source code, whether in source 
@@ -9,7 +9,6 @@
  * WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE. This notice may not be 
  * removed from the software by any user thereof.
  */
-
 package com.seleritycorp.observer.processors;
 
 import com.seleritycorp.datatypes.EnrichedObservation;
@@ -39,13 +38,10 @@ public class SingleFileProcessor extends Processor {
             }
 
             getLogger().warning("Appending to file: " + output);
-        }
-        else
-        {
+        } else {
             // Check for parent directory write rights
             File parentDir = output.getAbsoluteFile().getParentFile();
-            if (!(parentDir.isDirectory() && parentDir.canWrite()))
-            {
+            if (!(parentDir.isDirectory() && parentDir.canWrite())) {
                 final String msg = "Can not write to output directory: " + parentDir;
                 getLogger().severe(msg);
                 throw new IllegalArgumentException(msg);
@@ -68,8 +64,8 @@ public class SingleFileProcessor extends Processor {
         }
     }
 
-    public File getOutputFile()
-    {
+    public File getOutputFile() {
         return output;
     }
+
 }
