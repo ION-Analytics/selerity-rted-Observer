@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Selerity, Inc. 2009-2012. All rights reserved. This source code is confidential 
+ * (c) Copyright Selerity, Inc. 2009-2019. All rights reserved. This source code is confidential 
  * and proprietary information of Selerity Inc. and may be used only by a recipient designated 
  * by and for the purposes permitted by Selerity Inc. in writing.  Reproduction of, dissemination 
  * of, modifications to or creation of derivative works from this source code, whether in source 
@@ -9,18 +9,20 @@
  * WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE. This notice may not be 
  * removed from the software by any user thereof.
  */
-
 package com.seleritycorp.observer.reference;
 
 import com.seleritycorp.narwhal.client.*;
 import com.seleritycorp.narwhal.client.methods.CS;
 
 import java.net.MalformedURLException;
+import java.util.logging.Logger;
 
 /**
  * Gets an authentication token for a second service via first authenticating with core services.
  */
 public class CSAuthSession extends AuthenticatedSession {
+    private static final Logger log = Logger.getLogger(CSAuthSession.class.getName());
+
     final Session csSession;
 
     public CSAuthSession(String serverURL, String username, String client, String csUrl) throws MalformedURLException {
@@ -49,7 +51,8 @@ public class CSAuthSession extends AuthenticatedSession {
                 throw new RemoteException(response.getError());
             }
         } catch (Exception e) {
-            getLogger().info("Failed to invalidate session.");
+            log.info("Failed to invalidate session.");
         }
     }
+
 }
