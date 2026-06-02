@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Selerity, Inc. 2009-2012. All rights reserved. This source code is confidential
+ * (c) Copyright Selerity, Inc. 2009-2019. All rights reserved. This source code is confidential
  * and proprietary information of Selerity Inc. and may be used only by a recipient designated
  * by and for the purposes permitted by Selerity Inc. in writing.  Reproduction of, dissemination
  * of, modifications to or creation of derivative works from this source code, whether in source
@@ -9,7 +9,6 @@
  * WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE. This notice may not be
  * removed from the software by any user thereof.
  */
-
 package com.seleritycorp.observer;
 
 import com.seleritycorp.cs.standalone.commons.IOUtilities;
@@ -37,7 +36,7 @@ public enum Config {
     SPEC_PREFETCH_WINDOW("120"),
     SPEC_CACHE_SIZE("5000");
 
-    private static final Logger LOGGER = Logger.getLogger(Config.class.getName());
+    private static final Logger log = Logger.getLogger(Config.class.getName());
 
     private static final Properties PROPERTIES = new Properties();
     private final String defaultValue;
@@ -45,22 +44,22 @@ public enum Config {
     static {
         final String properties = System.getProperty("config.properties", "config.properties");
         try {
-            LOGGER.info("Read 'config.properties': " + properties);
+            log.info("Read 'config.properties': " + properties);
             InputStream stream = IOUtilities.getResourceAsStream(properties);
             if (stream == null) {
-                LOGGER.warning("Failed finding " + properties);
+                log.warning("Failed finding " + properties);
             } else {
                 PROPERTIES.load(stream);
             }
         } catch (IOException e) {
-            LOGGER.warning("Failed loading " + properties + ": " + e);
+            log.warning("Failed loading " + properties + ": " + e);
         }
 
         StringBuilder sb = new StringBuilder();
         for (Iterator<Object> it = PROPERTIES.keySet().iterator(); it.hasNext();) {
             sb.append(' ').append(it.next()).append(';');
         }
-        LOGGER.info("PROPERTIES has " + PROPERTIES.size() + " keys:" + sb.toString());
+        log.info("PROPERTIES has " + PROPERTIES.size() + " keys:" + sb.toString());
     }
 
     private Config() {

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Selerity, Inc. 2009-2012. All rights reserved. This source code is confidential
+ * (c) Copyright Selerity, Inc. 2009-2019. All rights reserved. This source code is confidential
  * and proprietary information of Selerity Inc. and may be used only by a recipient designated
  * by and for the purposes permitted by Selerity Inc. in writing.  Reproduction of, dissemination
  * of, modifications to or creation of derivative works from this source code, whether in source
@@ -9,7 +9,6 @@
  * WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE. This notice may not be
  * removed from the software by any user thereof.
  */
-
 package com.seleritycorp.observer;
 
 import com.seleritycorp.observer.processors.Processor;
@@ -20,66 +19,67 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class App {
-    private static final Logger LOGGER = Logger.getLogger(App.class.getName());
+    private static final Logger log = Logger.getLogger(App.class.getName());
 
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
-        LOGGER.info("Setup..");
+        log.info("Setup..");
 
-        LOGGER.info("Setting up processor...");
+        log.info("Setting up processor...");
         final Processor observationProcessor;
 
         // Find the processor class
         final String processorClass = Config.PROCESSOR_CLASS.getProperty();
         if (!Config.PROCESSOR_CLASS.hasProperty()) {
-            LOGGER.warning("will use default value for " + Config.PROCESSOR_CLASS.name() + ": " + processorClass);
+            log.warning("will use default value for " + Config.PROCESSOR_CLASS.name() + ": " + processorClass);
         }
 
         try {
             observationProcessor = (Processor) Class.forName(processorClass).newInstance();
         } catch (Exception e) {
-            LOGGER.severe("Could not load processor class (" + processorClass + ") :" + e);
+            log.severe("Could not load processor class (" + processorClass + ") :" + e);
             return;
         }
 
-        LOGGER.info("Setting up listener to receive JSON...");
+        log.info("Setting up listener to receive JSON...");
         final ResponseListener responseListener = new ResponseListener();
 
-        LOGGER.info("Setting up enricher to feed processor observations from listener's JSON...");
+        log.info("Setting up enricher to feed processor observations from listener's JSON...");
         final ObservationEnricher observationEnricher;
 
         try {
             observationEnricher = new ObservationEnricher(responseListener.getQueue(), observationProcessor);
         } catch (MalformedURLException e) {
-            LOGGER.severe("Connection failure: " + e);
+            log.severe("Connection failure: " + e);
             return;
         }
 
-        LOGGER.info("Starting up enricher...");
+        log.info("Starting up enricher...");
         Thread thread = new Thread(observationEnricher);
         thread.setDaemon(true);
         thread.start();
 
-        LOGGER.info("Starting up listener...");
+        log.info("Starting up listener...");
         try {
             responseListener.start();
         } catch (Exception e) {
-            LOGGER.severe("Failed to start response listener: " + e);
+            log.severe("Failed to start response listener: " + e);
             return;
         }
 
         try {
             while (true) {
-                LOGGER.info("Listening: " + responseListener.isAlive());
+                log.info("Listening: " + responseListener.isAlive());
                 try {
                     TimeUnit.MINUTES.sleep(2);
                 } catch (InterruptedException e) {
-                    LOGGER.warning("Sleep was disturbed: " + e);
+                    log.warning("Sleep was disturbed: " + e);
                     return;
                 }
             }
         } catch (Throwable t) {
-            LOGGER.log(Level.SEVERE, "Unhandled runtime exception.", t);
+            log.log(Level.SEVERE, "Unhandled runtime exception.", t);
         }
     }
+
 }
