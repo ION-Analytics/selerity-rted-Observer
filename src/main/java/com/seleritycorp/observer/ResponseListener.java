@@ -29,10 +29,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Listens for Observations.
  */
-public class ResponseListener extends DoesLoggingImpl implements StartStop, DataListener<Response> {
+public class ResponseListener extends DoesLoggingImpl implements StartStop, com.seleritycorp.narwhal.client.DataListener<Response> {
     private final AtomicInteger alive = new AtomicInteger(0);
     private final BlockingQueue<Map.Entry<DateHistory, Object>> queue = new LinkedBlockingQueue<>();
-    private StartStop observations = null;
+    private com.seleritycorp.narwhal.client.StartStop observations = null;
 
     @Override
     public void start() throws Exception {
@@ -46,7 +46,7 @@ public class ResponseListener extends DoesLoggingImpl implements StartStop, Data
         authenticatedSession.setToken(session.getToken());
         authenticatedSession.setDebug(Boolean.parseBoolean(Config.RPC_DEBUG.getProperty()));
         final Request request = new Request(authenticatedSession, OBS.SUBSCRIBE, DateUtils.format(new Date()), "SPEC_MEASUREMENT_STATUS");
-        observations = authenticatedSession.dispatch(request, this);
+        observations = authenticatedSession.dispatch(request, (com.seleritycorp.narwhal.client.DataListener<Response>) this);
         observations.start();
         while (!observations.isAlive()) {
             TimeUnit.MILLISECONDS.sleep(20);
