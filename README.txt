@@ -10,11 +10,10 @@ Required Software
 
 To build the program the following are required:
 
-   compatible with Java 1.7 and Java 1.8 SE  (http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-   Ant 1.8.2 (http://ant.apache.org/bindownload.cgi)
-   Ant-JUnit 1.8.2 (bundled with Ant package on Apache website; separate installation may be required if installing using OS package manager)
+   Java 8 or higher (tested up to Java 17)
+   Apache Maven 3.6+ (https://maven.apache.org/)
 
-Both Java and Ant should be installed and in your command path, and JAVA_HOME should
+Java and Maven should be installed and in your command path, and JAVA_HOME should
 be set.
 
 
@@ -28,22 +27,32 @@ have this set up contact support@seleritycorp.com.
 Building
 ========
 
-In a command shell:
+With Maven (recommended):
 
-   ant test
+   mvn test
 
-A successful build concludes:
+To run integration tests:
 
-  BUILD SUCCESSFUL
+   mvn test -Pintegration
+
+To build the executable standalone jar:
+
+   mvn clean package
+
+The built jar is located at target/observer.jar.
+
 
 
 Running
 =======
 
-In a command shell:
+With Maven:
 
-   ant dist-jar
-   java -jar dist/observer.jar
+   java -jar target/observer.jar
+
+Or directly via Maven Exec plugin:
+
+   mvn exec:exec
 
 This program has been run successfully on, but is not necessarily limited to, Mac
 OS X, Linux, and Windows Server 2008.

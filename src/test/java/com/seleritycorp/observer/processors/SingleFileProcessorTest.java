@@ -11,12 +11,14 @@
  */
 package com.seleritycorp.observer.processors;
 
+import com.seleritycorp.observer.Config;
 import com.seleritycorp.cs.standalone.commons.DateUtils;
 import com.seleritycorp.cs.standalone.commons.logging.DoesLoggingImpl;
 import com.seleritycorp.datatypes.EnrichedObservation;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.Date;
 
 import static com.seleritycorp.cs.standalone.commons.Utilities.consoleBanner;
@@ -25,9 +27,13 @@ import static junit.framework.Assert.assertNotNull;
 
 public class SingleFileProcessorTest extends DoesLoggingImpl {
     private SingleFileProcessor instance;
-    
+
     @Before
     public void setup() throws Exception {
+        File out = new File(Config.PROCESSOR_SINGLE_FILE_OUTPUT.getProperty()).getAbsoluteFile();
+        if (out.getParentFile() != null && !out.getParentFile().exists()) {
+            out.getParentFile().mkdirs();
+        }
         instance = new SingleFileProcessor();
         assertNotNull(instance);
         getLogger().info("Filename: " + instance.getOutputFile());
